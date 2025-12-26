@@ -21,19 +21,21 @@ if st.sidebar.button("Clear Memory"):
     st.sidebar.success("Memory Cleared!")
 
 
-st.sidebar.header("🎤 Voice Input")
+st.sidebar.subheader("🎤 Voice Input")
 use_voice = st.sidebar.checkbox("Enable Voice Input")
 
 speech_engine = SpeechEngine(language="en-US")
 
- 
+st.sidebar.subheader("🌐 Language Preference")
+language = st.sidebar.selectbox("Response Language", ["English", "Bangla", "Banglish"])
 
+ 
 
 #Initialize System
 settings = Settings()
 engine = GeminiEngine(settings.load_api_key())  
 memory = Memory()
-prompt_controller = PromptController(role=role)
+prompt_controller = PromptController(role=role, language=language)
 jarvis = JarvisAssistant(engine, prompt_controller, memory)
 
 # Greet
