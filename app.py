@@ -6,11 +6,16 @@ from jarvis.memory import Memory
 from jarvis.assistant import JarvisAssistant
 from jarvis.speech_engine import SpeechEngine
 import time
+from jarvis.exporter import ChatExporter
+
 
 
 st.set_page_config(page_title="Jarvis AI", layout="wide", page_icon="🤖")
 
 st.title("🤖 Jarvis - Personal AI Assistant")
+
+# Initialize Memory
+memory = Memory()
 
 
 #Sidebar
@@ -18,7 +23,7 @@ st.sidebar.header("⚙️ Controls")
 role = st.sidebar.selectbox("Assistant Role", ["Tutor", "Coder", "Career Mentor"])
 
 if st.sidebar.button("Clear Memory"):
-    Memory().clear()
+    memory.clear()
     st.sidebar.success("Memory Cleared!")
 
 
@@ -30,12 +35,27 @@ speech_engine = SpeechEngine(language="en-US")
 st.sidebar.subheader("🌐 Language Preference")
 language = st.sidebar.selectbox("Response Language", ["English", "Bangla", "Banglish"])
 
- 
+
+st.sidebar.subheader("📁 Export Chat")
+
+if st.sidebar.button("Export Chat as PDF"):
+    exporter = ChatExporter(memory)
+    file_path = exporter.export_pdf()
+    st.sidebar.success(f"Chat exported successfully!")
+
+    with open(file_path, "rb") as f:
+        st.sidebar.download_button(
+            label="⬇️ Download PDF",
+            data=f,
+            file_name="jarvis_chat.pdf",
+            mime="application/pdf"
+        )
+    
+        
 
 #Initialize System
 settings = Settings()
 engine = GeminiEngine(settings.load_api_key())  
-memory = Memory()
 prompt_controller = PromptController(role=role, language=language)
 jarvis = JarvisAssistant(engine, prompt_controller, memory)
 

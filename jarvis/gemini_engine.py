@@ -1,13 +1,15 @@
-import google.generativeai as genai
+import google.genai as genai
+#import google.generativeai as genai
 
 class GeminiEngine:
     def __init__(self, api_key: str):
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel("gemini-2.5-flash")
+        self.client = genai.Client(api_key=api_key)
+        self.model_name = "gemini-2.5-flash"
 
     def generate_stream(self, prompt: str):
         try:
-            response = self.model.generate_content(prompt, stream=True)
+            response = self.client.models.generate_content_stream(model=self.model_name,
+                                                                  contents=prompt)
             for chunk in response:
                 if chunk.text:
                     yield chunk.text
