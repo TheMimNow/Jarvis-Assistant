@@ -7,11 +7,14 @@ class JarvisAssistant:
     def greet(self):
         return "Hello! I am Jarvis, your personal AI assistant. How can I assist you today?"
 
-    def respond(self, user_input):
+    def respond_stream(self, user_input):
         self.memory.add("user", user_input)
         prompt = self.prompt_controller.build_prompt(user_input=user_input, memory=self.memory)
 
-        response = self.engine.generate(prompt)
-        self.memory.add("assistant", response)
-        return response
+        full_response = ""
+        for chunk in self.engine.generate_stream(prompt):
+            full_response += chunk
+            yield chunk
+
+        self.memory.add("assistant", full_response)
    

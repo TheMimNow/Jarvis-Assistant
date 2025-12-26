@@ -5,10 +5,12 @@ class GeminiEngine:
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel("gemini-2.5-flash")
 
-    def generate(self, prompt: str) -> str:
+    def generate_stream(self, prompt: str):
         try:
-            response = self.model.generate_content(prompt)
-            return response.text
+            response = self.model.generate_content(prompt, stream=True)
+            for chunk in response:
+                if chunk.text:
+                    yield chunk.text
         except Exception as e :
-            return f"‼️Gemini Error: {str(e)}"
+            yield f"‼️Gemini Error: {str(e)}"
                                       
